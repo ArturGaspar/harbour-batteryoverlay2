@@ -25,15 +25,14 @@ BuildRequires:  pkgconfig(wayland-client)
 BuildRequires:  desktop-file-utils
 
 %description
-Simple application for displaying battery charging percentage as overlay line on top of all windows
-
+Simple application for displaying battery charging percentage as overlay line
+on top of all windows
 
 %prep
 %setup -q -n %{name}-%{version}
 
 %build
-
-%qtc_qmake5  \
+%qtc_qmake5 \
     VERSION=%{version}
 
 %qtc_make %{?_smp_mflags}
@@ -42,9 +41,9 @@ Simple application for displaying battery charging percentage as overlay line on
 rm -rf %{buildroot}
 %qmake5_install
 
-desktop-file-install --delete-original       \
-  --dir %{buildroot}%{_datadir}/applications             \
-   %{buildroot}%{_datadir}/applications/*.desktop
+desktop-file-install --delete-original \
+    --dir %{buildroot}%{_datadir}/applications \
+    %{buildroot}%{_datadir}/applications/*.desktop
 
 %files
 %defattr(-,root,root,-)
