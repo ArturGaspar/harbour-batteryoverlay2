@@ -9,10 +9,6 @@
 #include <QDBusInterface>
 #include <QDBusConnection>
 
-#define SERVICENAME "harbour-batteryoverlay.service"
-#define SYSTEMDNAME "%1/.config/systemd/user/%2"
-#define WANTSNAME "%1/.config/systemd/user/user-session.target.wants/%2"
-
 class ViewHelper : public QObject
 {
     Q_OBJECT
@@ -27,7 +23,6 @@ public:
     Q_INVOKABLE void openStore();
     Q_INVOKABLE void checkOverlay();
     Q_INVOKABLE void setMouseRegion(int x, int y, int w, int h);
-    Q_INVOKABLE void removeService();
 
 public slots:
     void checkActiveOverlay();
@@ -43,7 +38,6 @@ signals:
 
 private:
     void showOverlay();
-    void checkService();
 
     QQuickView *overlayView;
 

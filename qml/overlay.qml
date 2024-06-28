@@ -71,7 +71,6 @@ Item {
         }
 
         onClicked: {
-            viewHelper.removeService()
             Qt.quit()
         }
 
@@ -207,7 +206,6 @@ Item {
                 text: "Leave comment in Jolla Store"
                 enabled: removalOverlay.enabled
                 onClicked: {
-                    viewHelper.removeService()
                     viewHelper.openStore()
                     Qt.quit()
                 }
@@ -218,7 +216,6 @@ Item {
                 text: "No, thanks"
                 enabled: removalOverlay.enabled
                 onClicked: {
-                    viewHelper.removeService()
                     Qt.quit()
                 }
             }

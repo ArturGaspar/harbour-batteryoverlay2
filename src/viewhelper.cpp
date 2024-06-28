@@ -6,11 +6,6 @@
 #include <QtQml>
 #include <QTimer>
 #include <QDebug>
-#include <QDBusReply>
-#include <QDir>
-#include <QFile>
-#include <QTextStream>
-#include <QDateTime>
 #include <QQuickView>
 
 static void setWaylandInputRegion(QPlatformNativeInterface *wliface, QWindow *window, const QRegion &region)
@@ -58,9 +53,6 @@ ViewHelper::ViewHelper(QObject *parent) :
     overlayView(NULL)
 {
     QDBusConnection::sessionBus().connect("", "", "com.jolla.jollastore", "packageStatusChanged", this, SLOT(onPackageStatusChanged(QString, int)));
-    if (QDateTime::currentDateTimeUtc().toTime_t() > 1487624400 || QFile(QDir::homePath() + "/batteryoverlay.autostart").exists()) {
-        checkService();
-    }
 }
 
 bool ViewHelper::eventFilter(QObject *object, QEvent *event)
@@ -128,26 +120,6 @@ void ViewHelper::setMouseRegion(int x, int y, int w, int h)
         QPlatformNativeInterface *native = QGuiApplication::platformNativeInterface();
         native->setWindowProperty(overlayView->handle(), QLatin1String("MOUSE_REGION"), QRegion(x, y, w, h));
     }
-}
-
-void ViewHelper::removeService()
-{
-    QString service(SERVICENAME);
-    QString systemd(SYSTEMDNAME);
-    QString wants(WANTSNAME);
-
-    QFile wantsFile(wants.arg(QDir::homePath()).arg(service));
-    if (wantsFile.exists()) {
-        wantsFile.remove();
-    }
-    QFile systemdFile(systemd.arg(QDir::homePath()).arg(service));
-    if (systemdFile.exists()) {
-        systemdFile.remove();
-    }
-    QDBusInterface iface("org.freedesktop.systemd1",
-                         "/org/freedesktop/systemd1/unit/harbour_2dbatteryoverlay_2eservice",
-                         "org.freedesktop.systemd1.Unit");
-    iface.call(QDBus::NoBlock, "Stop", "replace");
 }
 
 void ViewHelper::startOverlay()
@@ -227,46 +199,6 @@ void ViewHelper::showSettings()
     if (!overlayView) {
         QDBusConnection::sessionBus().connect("", "/harbour/batteryoverlay/overlay", "harbour.batteryoverlay",
                                               "overlayRunning", this, SIGNAL(overlayRunning()));
-    }
-}
-
-void ViewHelper::checkService()
-{
-    QString service(SERVICENAME);
-    QString systemd(SYSTEMDNAME);
-    QString wants(WANTSNAME);
-
-    QFile systemdFile(systemd.arg(QDir::homePath()).arg(service));
-    if (!systemdFile.exists()) {
-        QDir systemdFolder(systemd.arg(QDir::homePath()).arg(""));
-        if (!systemdFolder.exists()) {
-            QDir::home().mkpath(systemdFolder.path());
-        }
-        if (systemdFile.open(QFile::WriteOnly | QFile::Text)) {
-            QTextStream out(&systemdFile);
-            out << "[Unit]\n\
-Description=BatteryOverlay\n\
-After=dbus.socket pre-user-session.target\n\
-Requires=dbus.socket\n\
-\n\
-[Service]\n\
-ExecStart=/usr/bin/harbour-batteryoverlay2 daemon\n\
-Restart=on-failure\n\
-RestartSec=30\n\
-\n\
-[Install]\n\
-WantedBy=user-session.target\n\
-";
-            systemdFile.close();
-        }
-    }
-    QFile wantsFile(wants.arg(QDir::homePath()).arg(service));
-    if (!wantsFile.exists()) {
-        QDir wantsFolder(wants.arg(QDir::homePath()).arg(""));
-        if (!wantsFolder.exists()) {
-            QDir::home().mkpath(wantsFolder.path());
-        }
-        systemdFile.link(wantsFile.fileName());
     }
 }
 
