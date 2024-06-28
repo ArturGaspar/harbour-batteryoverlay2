@@ -2,12 +2,9 @@
 #define VIEWHELPER_H
 
 #include <QObject>
-#include <QGuiApplication>
+#include <QDBusAbstractAdaptor>
 #include <QQuickView>
-#include <QQmlContext>
 #include "sailfishapp.h"
-#include <QDBusInterface>
-#include <QDBusConnection>
 
 class ViewHelper : public QObject
 {
@@ -20,7 +17,6 @@ public:
 
     Q_INVOKABLE void closeOverlay();
     Q_INVOKABLE void startOverlay();
-    Q_INVOKABLE void openStore();
     Q_INVOKABLE void checkOverlay();
     Q_INVOKABLE void setMouseRegion(int x, int y, int w, int h);
 
@@ -34,15 +30,10 @@ public slots:
 signals:
     Q_SCRIPTABLE void overlayRunning();
 
-    void applicationRemoval();
-
 private:
     void showOverlay();
 
     QQuickView *overlayView;
-
-private slots:
-    void onPackageStatusChanged(const QString &package, int status);
 
 };
 

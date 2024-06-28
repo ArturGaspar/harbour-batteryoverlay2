@@ -4,7 +4,9 @@
 #include <wayland-client.h>
 #include <qpa/qplatformnativeinterface.h>
 #include <QtQml>
-#include <QTimer>
+#include <QGuiApplication>
+#include <QDBusConnection>
+#include <QDBusInterface>
 #include <QDebug>
 #include <QQuickView>
 
@@ -52,7 +54,6 @@ ViewHelper::ViewHelper(QObject *parent) :
     QObject(parent),
     overlayView(NULL)
 {
-    QDBusConnection::sessionBus().connect("", "", "com.jolla.jollastore", "packageStatusChanged", this, SLOT(onPackageStatusChanged(QString, int)));
 }
 
 bool ViewHelper::eventFilter(QObject *object, QEvent *event)
@@ -127,12 +128,6 @@ void ViewHelper::startOverlay()
     checkActiveOverlay();
 }
 
-void ViewHelper::openStore()
-{
-    QDBusInterface iface("com.jolla.jollastore", "/StoreClient", "com.jolla.jollastore");
-    iface.call(QDBus::NoBlock, "showApp", "harbour-batteryoverlay");
-}
-
 void ViewHelper::checkActiveOverlay()
 {
     bool inactive = QDBusConnection::sessionBus().registerService("harbour.batteryoverlay.overlay");
@@ -199,14 +194,5 @@ void ViewHelper::showSettings()
     if (!overlayView) {
         QDBusConnection::sessionBus().connect("", "/harbour/batteryoverlay/overlay", "harbour.batteryoverlay",
                                               "overlayRunning", this, SIGNAL(overlayRunning()));
-    }
-}
-
-void ViewHelper::onPackageStatusChanged(const QString &package, int status)
-{
-    if (package == "harbour-batteryoverlay2" && status != 1) {
-        if (overlayView) {
-            Q_EMIT applicationRemoval();
-        }
     }
 }
