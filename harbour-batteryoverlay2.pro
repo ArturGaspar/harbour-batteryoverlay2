@@ -29,3 +29,7 @@ OTHER_FILES += \
     qml/components/ColorSelector.qml \
     qml/components/ColorItem.qml \
     qml/pages/AboutPage.qml
+
+service.path = /usr/lib/systemd/user
+service.files = harbour-batteryoverlay2.service
+INSTALLS += service

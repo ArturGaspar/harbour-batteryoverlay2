@@ -23,6 +23,7 @@ BuildRequires:  pkgconfig(Qt5Qml)
 BuildRequires:  pkgconfig(Qt5Quick)
 BuildRequires:  pkgconfig(wayland-client)
 BuildRequires:  desktop-file-utils
+BuildRequires:  systemd
 
 %description
 Simple application for displaying battery charging percentage as overlay line
@@ -41,9 +42,22 @@ on top of all windows
 rm -rf %{buildroot}
 %qmake5_install
 
+%if "%{_userunitdir}" != "/usr/lib/systemd/user"
+mv %{buildroot}/usr/lib/systemd/user/%{name}.service %{buildroot}/%{_userunitdir}/%{name}.service
+%endif
+
 desktop-file-install --delete-original \
     --dir %{buildroot}%{_datadir}/applications \
     %{buildroot}%{_datadir}/applications/*.desktop
+
+%post
+%systemd_user_post %{name}.service
+
+%preun
+%systemd_user_preun %{name}.service
+
+%postun
+%systemd_user_postun %{name}.service
 
 %files
 %defattr(-,root,root,-)
@@ -51,3 +65,4 @@ desktop-file-install --delete-original \
 %{_datadir}/%{name}
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/86x86/apps/%{name}.png
+%{_userunitdir}/%{name}.service

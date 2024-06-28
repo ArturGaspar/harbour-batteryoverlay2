@@ -10,3 +10,4 @@ OrganizationName=harbour.batteryoverlay
 ApplicationName=overlay
 # For orientation.
 Permissions=Sensors
+ExecDBus=harbour-batteryoverlay2 daemon
