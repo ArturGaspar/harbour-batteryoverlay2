@@ -6,7 +6,6 @@
 #include <QQuickView>
 #include <QQmlContext>
 #include "sailfishapp.h"
-#include <mlite5/MGConfItem>
 #include <QDBusInterface>
 #include <QDBusConnection>
 
