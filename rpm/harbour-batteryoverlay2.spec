@@ -13,7 +13,7 @@ Version:    0.2.9
 Release:    2
 Group:      Qt/Qt
 License:    WTFPL
-URL:        https://github.com/CODeRUS/harbour-batteryoverlay
+URL:        https://github.com/ArturGaspar/%{name}
 Source0:    %{name}-%{version}.tar.bz2
 Requires:   sailfishsilica-qt5 >= 0.10.9
 BuildRequires:  pkgconfig(sailfishapp) >= 1.0.2
