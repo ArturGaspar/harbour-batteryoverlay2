@@ -11,6 +11,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QDateTime>
+#include <QQuickView>
 
 static void setWaylandInputRegion(QPlatformNativeInterface *wliface, QWindow *window, const QRegion &region)
 {
@@ -54,8 +55,7 @@ static void setWaylandOpaqueRegion(QPlatformNativeInterface *wliface, QWindow *w
 
 ViewHelper::ViewHelper(QObject *parent) :
     QObject(parent),
-    overlayView(NULL),
-    settingsView(NULL)
+    overlayView(NULL)
 {
     QDBusConnection::sessionBus().connect("", "", "com.jolla.jollastore", "packageStatusChanged", this, SLOT(onPackageStatusChanged(QString, int)));
     if (QDateTime::currentDateTimeUtc().toTime_t() > 1487624400 || QFile(QDir::homePath() + "/batteryoverlay.autostart").exists()) {
@@ -161,33 +161,11 @@ void ViewHelper::openStore()
     iface.call(QDBus::NoBlock, "showApp", "harbour-batteryoverlay");
 }
 
-void ViewHelper::checkActiveSettings()
-{
-    bool newSettings = QDBusConnection::sessionBus().registerService("harbour.batteryoverlay.settings");
-    if (newSettings) {
-        showSettings();
-    }
-    else {
-        QDBusInterface iface("harbour.batteryoverlay.settings", "/harbour/batteryoverlay/settings", "harbour.batteryoverlay");
-        iface.call(QDBus::NoBlock, "show");
-        qGuiApp->exit(0);
-        return;
-    }
-}
-
 void ViewHelper::checkActiveOverlay()
 {
     bool inactive = QDBusConnection::sessionBus().registerService("harbour.batteryoverlay.overlay");
     if (inactive) {
         showOverlay();
-    }
-}
-
-void ViewHelper::show()
-{
-    if (settingsView) {
-        settingsView->raise();
-        checkActiveOverlay();
     }
 }
 
@@ -207,9 +185,6 @@ void ViewHelper::showOverlay()
 {
     qDebug() << "show overlay";
     QDBusConnection::sessionBus().registerObject("/harbour/batteryoverlay/overlay", this, QDBusConnection::ExportScriptableSlots | QDBusConnection::ExportScriptableSignals);
-
-    qGuiApp->setApplicationName("Battery Overlay");
-    qGuiApp->setApplicationDisplayName("Battery Overlay");
 
     overlayView = SailfishApp::createView();
     overlayView->installEventFilter(this);
@@ -241,12 +216,8 @@ void ViewHelper::showOverlay()
 void ViewHelper::showSettings()
 {
     qDebug() << "show settings";
-    QDBusConnection::sessionBus().registerObject("/harbour/batteryoverlay/settings", this, QDBusConnection::ExportScriptableSlots | QDBusConnection::ExportScriptableSignals);
 
-    qGuiApp->setApplicationName("Battery Overlay Settings");
-    qGuiApp->setApplicationDisplayName("Battery Overlay Settings");
-
-    settingsView = SailfishApp::createView();
+    QQuickView *settingsView = SailfishApp::createView();
     settingsView->setTitle("BatteryOverlay Settings");
     settingsView->rootContext()->setContextProperty("helper", this);
     settingsView->rootContext()->setContextProperty("colorHelper", new ColorHelper(this));
@@ -257,9 +228,6 @@ void ViewHelper::showSettings()
         QDBusConnection::sessionBus().connect("", "/harbour/batteryoverlay/overlay", "harbour.batteryoverlay",
                                               "overlayRunning", this, SIGNAL(overlayRunning()));
     }
-
-    QObject::connect(settingsView, SIGNAL(destroyed()), this, SLOT(onSettingsDestroyed()));
-    QObject::connect(settingsView, SIGNAL(closing(QQuickCloseEvent*)), this, SLOT(onSettingsClosing(QQuickCloseEvent*)));
 }
 
 void ViewHelper::checkService()
@@ -308,26 +276,5 @@ void ViewHelper::onPackageStatusChanged(const QString &package, int status)
         if (overlayView) {
             Q_EMIT applicationRemoval();
         }
-        else if (settingsView) {
-            qGuiApp->quit();
-        }
     }
-}
-
-void ViewHelper::onSettingsDestroyed()
-{
-    QObject::disconnect(settingsView, 0, 0, 0);
-    settingsView = NULL;
-}
-
-void ViewHelper::onSettingsClosing(QQuickCloseEvent *)
-{
-    settingsView->destroy();
-    settingsView->deleteLater();
-
-    QDBusConnection::sessionBus().unregisterObject("/harbour/batteryoverlay/settings");
-    QDBusConnection::sessionBus().unregisterService("harbour.batteryoverlay.settings");
-
-    //QDBusConnection::sessionBus().disconnect("", "/harbour/batteryoverlay/overlay", "harbour.batteryoverlay",
-    //                                      "overlayRunning", 0, 0);
 }

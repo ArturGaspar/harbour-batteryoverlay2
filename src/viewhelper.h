@@ -31,10 +31,9 @@ public:
     Q_INVOKABLE void removeService();
 
 public slots:
-    void checkActiveSettings();
     void checkActiveOverlay();
+    void showSettings();
 
-    Q_SCRIPTABLE Q_NOREPLY void show();
     Q_SCRIPTABLE Q_NOREPLY void exit();
     Q_SCRIPTABLE Q_NOREPLY void pingOverlay();
 
@@ -45,17 +44,12 @@ signals:
 
 private:
     void showOverlay();
-    void showSettings();
     void checkService();
 
     QQuickView *overlayView;
-    QQuickView *settingsView;
 
 private slots:
     void onPackageStatusChanged(const QString &package, int status);
-
-    void onSettingsDestroyed();
-    void onSettingsClosing(QQuickCloseEvent*);
 
 };
 

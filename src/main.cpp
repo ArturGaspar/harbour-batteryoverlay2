@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
 
     QTimer::singleShot(1, helper.data(), SLOT(checkActiveOverlay()));
     if (argc == 1) {
-        QTimer::singleShot(2, helper.data(), SLOT(checkActiveSettings()));
+        QTimer::singleShot(2, helper.data(), SLOT(showSettings()));
     }
 
     return application->exec();
