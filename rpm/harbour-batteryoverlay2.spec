@@ -32,6 +32,12 @@ on top of all windows
 %setup -q -n %{name}-%{version}
 
 %build
+%if 0%{?sailfishos_version} >= 40100
+%define sailjail /usr/bin/sailjail --
+%else
+%define sailjail %{nil}
+%endif
+sed -e 's|@@SAILJAIL@@|%{sailjail}|g' %{name}.service.in > %{name}.service
 %qtc_qmake5 \
     VERSION=%{version}
 
