@@ -57,7 +57,11 @@ desktop-file-install --delete-original \
     %{buildroot}%{_datadir}/applications/*.desktop
 
 %post
+%if 0%{?sailfishos_version} >= 40100
 %systemd_user_post %{name}.service
+%else
+%systemd_post \--user \--global %{name}.service
+%endif
 
 %preun
 %systemd_user_preun %{name}.service
