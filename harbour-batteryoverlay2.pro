@@ -1,6 +1,6 @@
 TARGET = harbour-batteryoverlay2
 
-QT += dbus gui-private
+QT += gui-private
 CONFIG += sailfishapp
 PKGCONFIG += \
   wayland-client \

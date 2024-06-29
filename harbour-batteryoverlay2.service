@@ -4,8 +4,6 @@ After=dbus.socket booster-generic.service lipstick.service
 Requires=dbus.socket booster-generic.service lipstick.service
 
 [Service]
-Type=dbus
-BusName=harbour.batteryoverlay.overlay
 ExecStart=/usr/bin/invoker --type=generic -- /usr/bin/sailjail -- /usr/bin/harbour-batteryoverlay2 -daemon
 
 [Install]
