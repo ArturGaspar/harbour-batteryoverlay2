@@ -9,7 +9,7 @@ Name:       harbour-batteryoverlay2
 %{?qtc_builddir:%define _builddir %qtc_builddir}
 
 Summary:    Battery overlay
-Version:    0.3.0
+Version:    0.4.0
 Release:    0
 Group:      Qt/Qt
 License:    WTFPL
