@@ -28,6 +28,11 @@ BuildRequires:  systemd
 Simple application for displaying battery charging percentage as overlay line
 on top of all windows
 
+Due to sandboxing, it is no longer possible to automatically configure
+autostart, execute
+`systemctl --user enable --now %{name}.service`
+instead.
+
 %prep
 %setup -q -n %{name}-%{version}
 
