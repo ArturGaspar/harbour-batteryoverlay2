@@ -1,24 +1,23 @@
-#include <QtGui/QGuiApplication>
-#include <QtQml>
-#include <QQuickView>
-#include <QQmlEngine>
-#include <QQmlContext>
-#include <qpa/qplatformnativeinterface.h>
+#include <QDBusConnection>
+#include <QGuiApplication>
 #include <QScopedPointer>
-#include <QTimer>
 #include <sailfishapp.h>
-#include "viewhelper.h"
+#include "overlayhelper.h"
+#include "settingshelper.h"
 
 int main(int argc, char *argv[])
 {
     QScopedPointer<QGuiApplication> application(SailfishApp::application(argc, argv));
     application->setApplicationVersion(QString(APP_VERSION));
-    QScopedPointer<ViewHelper> helper(new ViewHelper(application.data()));
 
-    QTimer::singleShot(1, helper.data(), SLOT(checkActiveOverlay()));
-    if (argc == 1) {
-        QTimer::singleShot(2, helper.data(), SLOT(showSettings()));
+    if (application->arguments().contains("-daemon")) {
+        bool registered = QDBusConnection::sessionBus().registerService("harbour.batteryoverlay.overlay");
+        if (!registered) {
+            return 1;
+        }
+        QScopedPointer<OverlayHelper> overlayHelper(new OverlayHelper(application.data()));
+    } else {
+        QScopedPointer<SettingsHelper> settingsHelper(new SettingsHelper(application.data()));
     }
-
     return application->exec();
 }

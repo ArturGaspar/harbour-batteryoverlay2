@@ -6,12 +6,11 @@ Page {
     id: page
     objectName: "mainPage"
 
-    property bool overlayRunning: false
+    property bool overlayVisible: false
     Connections {
         target: helper
-        onOverlayRunning: {
-            console.log("Received overlay pong")
-            overlayRunning = true
+        onOverlayVisibleChanged: (visible) => {
+            overlayVisible = visible
         }
     }
 
@@ -22,14 +21,12 @@ Page {
 
         PullDownMenu {
             MenuItem {
-                text: overlayRunning ? "Close overlay" : "Start overlay"
+                text: overlayVisible ? "Hide overlay" : "Show overlay"
                 onClicked: {
-                    if (overlayRunning) {
-                        overlayRunning = false
-                        helper.closeOverlay()
-                    }
-                    else {
-                        helper.startOverlay()
+                    if (overlayVisible) {
+                        helper.hideOverlay()
+                    } else {
+                        helper.showOverlay()
                     }
                 }
             }
@@ -190,7 +187,5 @@ Page {
 
         fixedOrientationCombo._updating = false
         fixedOrientationCombo.currentIndex = configuration.fixedOrientation
-
-        helper.checkOverlay();
     }
 }

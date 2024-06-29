@@ -2,7 +2,7 @@ import QtQuick 2.1
 import Sailfish.Silica 1.0
 import QtSensors 5.0
 import Nemo.Configuration 1.0
-;import org.nemomobile.systemsettings 1.0
+import org.nemomobile.systemsettings 1.0
 
 Item {
     id: root
@@ -10,8 +10,6 @@ Item {
     width: Screen.width
     height: Screen.height
     visible: battery.chargePercentage <= configuration.threshold
-
-    property int statusBarPushDownY: 0
 
     Item {
         id: rotationItem
@@ -133,14 +131,14 @@ Item {
                                             ? Theme.highlightColor
                                             : Theme.highlightBackgroundColor
         property string systemUnchargedColor: displayChargingStatus && battery.isCharging
-                                                     ? Theme.secondaryHighlightColor
-                                                     : Theme.highlightDimmerColor
+                                              ? Theme.secondaryHighlightColor
+                                              : Theme.highlightDimmerColor
         property string settingsChargedColor: displayChargingStatus && battery.isCharging
-                                      ? chargingChargedColor
-                                      : normalChargedColor
+                                              ? chargingChargedColor
+                                              : normalChargedColor
         property string settingsUnchargedColor: displayChargingStatus && battery.isCharging
-                                        ? chargingUnchargedColor
-                                        : normalUnchangedColor
+                                                ? chargingUnchargedColor
+                                                : normalUnchangedColor
         property string chargedColor: useSystemColors ? systemChargedColor : settingsChargedColor
         property string unchargedColor: useSystemColors ? systemUnchargedColor : settingsUnchargedColor
 
