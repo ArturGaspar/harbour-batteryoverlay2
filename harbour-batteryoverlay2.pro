@@ -10,11 +10,11 @@ DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
 SOURCES += \
     src/main.cpp \
-    src/viewhelper.cpp \
+    src/overlayhelper.cpp \
     src/colorhelper.cpp
 
 HEADERS += \
-    src/viewhelper.h \
+    src/overlayhelper.h \
     src/colorhelper.h
 
 OTHER_FILES += \

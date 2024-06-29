@@ -2,16 +2,14 @@ import QtQuick 2.1
 import Sailfish.Silica 1.0
 import QtSensors 5.0
 import Nemo.Configuration 1.0
-;import org.nemomobile.systemsettings 1.0
+import org.nemomobile.systemsettings 1.0
 
 Item {
     id: root
 
     width: Screen.width
     height: Screen.height
-    visible: battery.chargePercentage <= configuration.threshold
-
-    property int statusBarPushDownY: 0
+    visible: configuration.visible && battery.chargePercentage <= configuration.threshold
 
     Item {
         id: rotationItem
@@ -93,6 +91,7 @@ Item {
     ConfigurationGroup {
         id: internal
         path: "/apps/harbour-battery-overlay"
+        property bool visible: true
         property bool followOrientation: false
         property int lineHeight: 5
         property int opacityPercentage: 50
@@ -116,6 +115,7 @@ Item {
     QtObject {
         id: configuration
 
+        property bool visible: internal ? internal.visible : true
         property bool followOrientation: internal ? internal.followOrientation : false
         property int lineHeight: internal ? internal.lineHeight : 5
         property int opacityPercentage: internal ? internal.opacityPercentage : 50
@@ -133,14 +133,14 @@ Item {
                                             ? Theme.highlightColor
                                             : Theme.highlightBackgroundColor
         property string systemUnchargedColor: displayChargingStatus && battery.isCharging
-                                                     ? Theme.secondaryHighlightColor
-                                                     : Theme.highlightDimmerColor
+                                              ? Theme.secondaryHighlightColor
+                                              : Theme.highlightDimmerColor
         property string settingsChargedColor: displayChargingStatus && battery.isCharging
-                                      ? chargingChargedColor
-                                      : normalChargedColor
+                                              ? chargingChargedColor
+                                              : normalChargedColor
         property string settingsUnchargedColor: displayChargingStatus && battery.isCharging
-                                        ? chargingUnchargedColor
-                                        : normalUnchangedColor
+                                                ? chargingUnchargedColor
+                                                : normalUnchangedColor
         property string chargedColor: useSystemColors ? systemChargedColor : settingsChargedColor
         property string unchargedColor: useSystemColors ? systemUnchargedColor : settingsUnchargedColor
 

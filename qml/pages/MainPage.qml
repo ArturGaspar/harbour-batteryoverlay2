@@ -6,14 +6,7 @@ Page {
     id: page
     objectName: "mainPage"
 
-    property bool overlayRunning: false
-    Connections {
-        target: helper
-        onOverlayRunning: {
-            console.log("Received overlay pong")
-            overlayRunning = true
-        }
-    }
+    property bool overlayVisible: configuration ? configuration.visible : true
 
     SilicaFlickable {
         id: flick
@@ -22,16 +15,8 @@ Page {
 
         PullDownMenu {
             MenuItem {
-                text: overlayRunning ? "Close overlay" : "Start overlay"
-                onClicked: {
-                    if (overlayRunning) {
-                        overlayRunning = false
-                        helper.closeOverlay()
-                    }
-                    else {
-                        helper.startOverlay()
-                    }
-                }
+                text: overlayVisible ? "Hide overlay" : "Show overlay"
+                onClicked: configuration.visible = !overlayVisible
             }
 
             MenuItem {
@@ -171,9 +156,10 @@ Page {
 
     property QtObject configuration
     Component.onCompleted: {
-        configuration = Qt.createQmlObject("import org.nemomobile.configuration 1.0;" +
+        configuration = Qt.createQmlObject("import Nemo.Configuration 1.0;" +
         "ConfigurationGroup {
             path: \"/apps/harbour-battery-overlay\"
+            property bool visible: true
             property bool followOrientation: false
             property int lineHeight: 5
             property int opacityPercentage: 50
@@ -190,7 +176,5 @@ Page {
 
         fixedOrientationCombo._updating = false
         fixedOrientationCombo.currentIndex = configuration.fixedOrientation
-
-        helper.checkOverlay();
     }
 }

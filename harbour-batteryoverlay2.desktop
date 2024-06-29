@@ -8,6 +8,5 @@ Name=Battery Overlay
 [X-Sailjail]
 OrganizationName=harbour.batteryoverlay
 ApplicationName=overlay
-# For orientation.
 Permissions=Sensors
-ExecDBus=harbour-batteryoverlay2 daemon
+ExecDBus=harbour-batteryoverlay2 -daemon

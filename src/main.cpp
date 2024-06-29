@@ -1,24 +1,38 @@
-#include <QtGui/QGuiApplication>
-#include <QtQml>
-#include <QQuickView>
-#include <QQmlEngine>
+#include <QDBusConnection>
+#include <QGuiApplication>
+#include <QProcess>
 #include <QQmlContext>
-#include <qpa/qplatformnativeinterface.h>
+#include <QQuickView>
 #include <QScopedPointer>
-#include <QTimer>
 #include <sailfishapp.h>
-#include "viewhelper.h"
+#include "colorhelper.h"
+#include "overlayhelper.h"
 
 int main(int argc, char *argv[])
 {
     QScopedPointer<QGuiApplication> application(SailfishApp::application(argc, argv));
     application->setApplicationVersion(QString(APP_VERSION));
-    QScopedPointer<ViewHelper> helper(new ViewHelper(application.data()));
 
-    QTimer::singleShot(1, helper.data(), SLOT(checkActiveOverlay()));
-    if (argc == 1) {
-        QTimer::singleShot(2, helper.data(), SLOT(showSettings()));
+    QScopedPointer<OverlayHelper> overlayHelper;
+    QScopedPointer<QQuickView> settingsView;
+
+    if (application->arguments().contains("-daemon")) {
+        bool registered = QDBusConnection::sessionBus().registerService("harbour.batteryoverlay.overlay");
+        if (!registered) {
+            return 1;
+        }
+        overlayHelper.reset(new OverlayHelper(application.data()));
+    } else {
+        // Will exit if already running.
+        QProcess::startDetached(QCoreApplication::instance()->applicationFilePath(),
+                                QStringList() << "-daemon");
+
+        settingsView.reset(SailfishApp::createView());
+
+        settingsView->setTitle("BatteryOverlay Settings");
+        settingsView->rootContext()->setContextProperty("colorHelper", new ColorHelper(settingsView.data()));
+        settingsView->setSource(SailfishApp::pathTo("qml/settings.qml"));
+        settingsView->showFullScreen();
     }
-
     return application->exec();
 }

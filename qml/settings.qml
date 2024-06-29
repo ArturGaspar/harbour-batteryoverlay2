@@ -10,8 +10,4 @@ ApplicationWindow
     property var colors : [ "#ff0080", "#ff0000", "#ff8000", "#ffff00", "#00ff00",
                             "#00ff80", "#00ffff", "#0000ff", "#8000ff", "#ff00ff",
                             "#000000", "#ffffff" ]
-
-    onApplicationActiveChanged: helper.checkOverlay()
 }
-
-
